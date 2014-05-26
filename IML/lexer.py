@@ -1,6 +1,7 @@
 import re
 import sys
 
+
 def lex(source, token_exprs):
     pos = 0
     tokens = []

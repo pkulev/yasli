@@ -7,7 +7,7 @@ if __name__ == '__main__':
     try:
         filename = sys.argv[1]
     except Exception as e:
-        print e
+        print(e)
 
     file = open(filename)
     src = file.read()
