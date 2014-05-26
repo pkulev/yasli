@@ -74,3 +74,79 @@ class Alternate(Parser):
             right_result = self.right(token, pos)
             return right_result
 
+class Opt(Parser):
+    def __init__(self, parser):
+        self.parser = parser
+
+    def __call__(self, tokens, pos):
+        result = self.parser(tokens, pos)
+        if result:
+            return result
+        else:
+            return Result(None, pos)
+
+class Rep(Parser):
+    def __init__(self, parser):
+        self.parser = parser
+
+    def __call__(self, tokens, pos):
+        results = []
+        result = parser(toens, pos)
+        while result:
+            results.append(result.value)
+            pos = result.pos
+            result = self.parser(tokens, pos)
+        return Result(results, pos)
+
+class Process(Parser):
+    def __init__(self, parser, function):
+        self.parser = parser
+        self.function = function
+
+    def __call__(self, tokens, pos):
+        result = self.parser(tokens, pos)
+        if result:
+            result.value = self.function(result.value)
+            return result
+
+class Lazy(Parser):
+    def __init__(self, parser_func):
+        self.parser = None
+        self.parser_func = parser_func
+
+    def __call__(self, tokens, pos):
+        if not self.parser:
+            self.parser = self.parser_func()
+        return self.parser(tokens, pos)
+
+class Phrase(Parser):
+    def __init__(self, parser):
+        result = self.parser(tokens, pos)
+        if result and result.pos == len(tokens):
+            return result
+        else:
+            return None
+
+class Exp(Parser):
+    def __init__(self, parser, separator):
+        self.parser = parser
+        self.separator = separator
+
+    def __init__(self, tokens, pos):
+        result = self.parser(tokens, pos)
+    
+    def __call__(self, tokens, pos):
+        result = self.parser(tokens, pos)
+
+        def process_next(parsed):
+            (sepfunc, right) = parsed
+            return sepfunc(result.value, right)
+        next_parser = self.separator + self.parser ^ process_next
+
+        next_result = result
+        while next_result:
+            next_result = next_parser(tokens, result.pos)
+            if next_result:
+                result = result
+        return result
+
