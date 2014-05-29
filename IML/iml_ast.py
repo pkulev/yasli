@@ -1,5 +1,4 @@
 from equality import *
-from IML.equality import Equality
 
 
 class Statement(Equality):
@@ -99,6 +98,37 @@ class VarAexp(Aexp):
 
 
 class BinopAexp(Aexp):
+    def __init__(self, op, left, right):
+        self.op = op
+        self.left = left
+        self.right = right
+
+    def __repr__(self):
+        return 'BinopAexp(%s, %s, %s)' % (self.op, self.left, self.right)
+
+    def eval(self, env):
+        left_value = self.left.eval(env)
+        right_value = self.right.eval(env)
+        m = {'+': lambda: lvalue + rvalue,
+             '-': lambda: lvalue - rvalue,
+             '*': lambda: lvalue *  rvalue,
+             '/': lambda: lvalue / rvalue
+             }
+
+        if self.op == '+':
+            value = left_value + right_value
+        elif self.op == '-':
+            value = left_value - right_value
+        elif self.op == '*':
+            value = left_value * right_value
+        elif self.op == '/':
+            value = left_value / right_value
+        else:
+            raise RuntimeError('unknown operator: ' + self.op)
+        return value
+
+
+class RelopAexp(Aexp):
     def __init__(self, op, left, right):
         self.op = op
         self.left = left

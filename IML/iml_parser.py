@@ -61,8 +61,7 @@ def precedence(value_parser, precedence_levels, combine):
     def op_parser(precedence_level):
         return any_operator_in_list(precedence_level) ^ combine
     parser = value_parser * op_parser(precedence_levels[0])
-    for precedence_level in precedence_levels[1:]:
-        parser = parser * op_parser(precedence_level)
+    parser = parser * op_parser(precedence_level)
     return parser
 
 

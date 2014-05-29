@@ -10,8 +10,8 @@ class Result(object):
 
 
 class Parser(object):
-    def __call__(self, tokens, pos):
-        return None
+#    def __call__(self, tokens, pos):
+#        return None
 
     def __add__(self, other):
         return Concat(self, other)
@@ -158,5 +158,5 @@ class Exp(Parser):
         while next_result:
             next_result = next_parser(tokens, result.pos)
             if next_result:
-                result = result
+                result = next_result
         return result
