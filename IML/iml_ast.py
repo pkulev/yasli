@@ -77,7 +77,7 @@ class IntAexp(Aexp):
         self.i = i
 
     def __repr__(self):
-        return 'IntAexp({0})'.format(i)
+        return 'IntAexp({0})'.format(self.i)
 
     def eval(self, env):
         return self.i
@@ -107,35 +107,28 @@ class BinopAexp(Aexp):
         return 'BinopAexp(%s, %s, %s)' % (self.op, self.left, self.right)
 
     def eval(self, env):
-        left_value = self.left.eval(env)
-        right_value = self.right.eval(env)
+        lvalue = self.left.eval(env)
+        rvalue = self.right.eval(env)
         m = {'+': lambda: lvalue + rvalue,
              '-': lambda: lvalue - rvalue,
-             '*': lambda: lvalue *  rvalue,
+             '*': lambda: lvalue * rvalue,
              '/': lambda: lvalue / rvalue
              }
-
-        if self.op == '+':
-            value = left_value + right_value
-        elif self.op == '-':
-            value = left_value - right_value
-        elif self.op == '*':
-            value = left_value * right_value
-        elif self.op == '/':
-            value = left_value / right_value
-        else:
-            raise RuntimeError('unknown operator: ' + self.op)
+        try:
+            value = m[self.op]()
+        except KeyError:
+            raise RuntimeError('Unknown operator: ' + str(self.op))
         return value
 
 
-class RelopAexp(Aexp):
+class RelopBexp(Bexp):
     def __init__(self, op, left, right):
         self.op = op
         self.left = left
         self.right = right
 
     def __repr__(self):
-        return 'BinopAexp({0},{1},{2})'.format(self.op, self.left, self.right)
+        return 'RelopBexp({0},{1},{2})'.format(self.op, self.left, self.right)
 
     def eval(self, env):
         lvalue = self.left.eval(env)
@@ -177,8 +170,8 @@ class OrBexp(Bexp):
         return 'OrBexp({0}, {1})'.format(self.left, self.right)
 
     def eval(self, env):
-        lvalue = self.left.eval()
-        rvalue = self.right.eval()
+        lvalue = self.left.eval(env)
+        rvalue = self.right.eval(env)
         return lvalue or rvalue
 
 
@@ -190,5 +183,5 @@ class NotBexp(Bexp):
         return 'NotBexp({0})'.format(self.exp)
 
     def eval(self, env):
-        value = self.exp.eval()
+        value = self.exp.eval(env)
         return not value
