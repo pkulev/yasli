@@ -8,7 +8,6 @@ import click
 from iml_lexer import *
 from iml_parser import *
 
-MODE = None
 
 def err(msg):
     delim = " "
