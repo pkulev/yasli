@@ -1,23 +1,14 @@
+#! /usr/bin/env python
+
 import sys
-import argparse
 from datetime import datetime
 
+import click
 
 from iml_lexer import *
 from iml_parser import *
 
 MODE = None
-
-parser = argparse.ArgumentParser()
-parser.add_argument('filename', type=str, help='File to execute')
-
-if len(sys.argv) > 1:
-    args = parser.parse_args()
-    MODE = "file"
-else:
-    MODE = "repl"
-    args = None
-
 
 def err(msg):
     delim = " "
@@ -76,15 +67,16 @@ def exec_iml_file(src):
             log('{0}: {1}'.format(str(var), str(val)))
         return 0
 
-
-def main(args):
-    if MODE == "repl":
-        return start_iml_repl()
-    elif MODE == "file":
-        filename = args.filename if args.filename else None
+@click.command()
+@click.option('-e', '--exec', default='', type=str, help='Execute file')
+def main(exec):
+    if exec:
+        filename = exec
         with open(filename, 'r') as f:
             src = f.read()
         return exec_iml_file(src)
+    else:
+        return start_iml_repl()
 
 if __name__ == '__main__':
-    sys.exit(main(args))
+    sys.exit(main())
